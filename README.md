@@ -1,4 +1,5 @@
 # Autonomous car model [WIP]
+![project overview](overview.JPG)  
 We're building a model of an autonomous car using ROS framework. The idea is to have a fully functional car in 1:10 scale that we can use for experiments, development and testing of Computer Vision and Machine Learning algorithms.
 
 ## Environment
