@@ -1,19 +1,51 @@
 <?xml version="1.0"?>
 <robot name="car">
-    <material name="gray">
-      <color rgba="0.8 0.8 0.8 1"/>
-    </material>
+  <material name="gray">
+    <color rgba="0.8 0.8 0.8 1"/>
+  </material>
+
+  <gazebo reference="base_link">
+    <material>Gazebo/Grey</material>
+  </gazebo>
+
+  <gazebo reference="right_front_steering">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+
+  <gazebo reference="left_front_steering">
+    <material>Gazebo/Blue</material>
+  </gazebo>
 
   <link name="base_link">
+    <collision>
+        <origin xyz="0 0 0.06" rpy="0 0 0"/>
+        <geometry>
+            <box size="0.001 0.001 0.001"/>
+        </geometry>
+    </collision>
+
     <visual>
       <geometry>
         <box size =".001 .001 .001"/>
       </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="0 0 0.06" xyz="0 0 0"/>
     </visual>
   </link>
 
   <link name="body">
+    <inertial>
+      <origin xyz="0 0 0.063" rpy="0 0 0"/>
+      <mass value="2.5" />
+      <inertia ixx="0.0332083" ixy="0.0" ixz="0.0" iyy="0.01302083" iyz="0.0" izz="0.03685416"/>
+    </inertial>
+
+    <collision>
+        <origin rpy="0 0 0" xyz="0.14 0 0.063"/>
+        <geometry>
+            <box size="0.45 0.2 0.15"/>
+        </geometry>
+    </collision>
+
     <visual>
       <geometry>
         <!--Dimensions: 37x20xheight   height may very depending on components, should be ~20cm-->
@@ -27,20 +59,36 @@
   <joint name="right_steering" type="revolute">
     <parent link="base_link"/>
     <child link="right_front_steering"/>
-    <origin xyz="0.28 -0.08 0.054"/>
-    <axis   xyz="0 0 1"/>
+    <origin xyz="0.28 -0.08 0.0325"/>
+    <axis  xyz="0 0 1"/>
     <limit lower="-0.87" upper="0.87" effort="1000" velocity="1000"/>
   </joint>
 
   <joint name="left_steering" type="revolute">
     <parent link="base_link"/>
     <child link="left_front_steering"/>
-    <origin xyz="0.28 0.079 0.054"/>
+    <origin xyz="0.28 0.079 0.0325"/>
     <axis   xyz="0 0 1"/>
     <limit lower="-0.87" upper="0.87" effort="1000" velocity="1000"/>
   </joint>
 
   <link name="right_front_steering">
+    <collision>
+      <origin xyz="0 0 0" rpy="1.57075 0 0"/>
+      <geometry>
+        <cylinder radius="0.035" length="0.025"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+      <mass value="0.001"/>
+      <inertia
+        ixx=".01" ixy="0.0" ixz="0.0"
+        iyy=".01" iyz="0.0"
+        izz=".01"/>
+    </inertial>
+
     <visual>
       <geometry>
         <box size =".001 .001 .001"/>
@@ -49,7 +97,7 @@
     </visual>
   </link>
 
-  <joint name="right_front_wheel" type="continuous">
+  <joint name="right_front_wheel_joint" type="continuous">
     <parent link="right_front_steering"/>
     <child link="right_front_wheel"/>
     <origin xyz="0.0 0.0 0.0"/>
@@ -57,18 +105,52 @@
   </joint>
 
   <link name="right_front_wheel">
+      <collision>
+      <origin xyz="0 0 0" rpy="1.57075 0 0"/>
+      <geometry>
+        <cylinder radius="0.035" length="0.025"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+      <mass value="0.001"/>
+      <inertia
+        ixx=".01" ixy="0.0" ixz="0.0"
+        iyy=".01" iyz="0.0"
+        izz=".01"/>
+    </inertial>
+
+
     <visual>
       <geometry>
         <!--        Diameter: 6.5cm, width: 2.5cm-->
         <mesh filename="package://robot_description/models/car_robot/meshes/wheel.dae"/>
       </geometry>
-      <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+      <origin xyz="0 0 0" rpy="1.57075 0 0"/>
     </visual>
   </link>
 
 
 
   <link name="left_front_steering">
+
+    <collision>
+      <origin xyz="0 0 0" rpy="-1.57075 0 0"/>
+      <geometry>
+        <cylinder radius="0.035" length="0.025"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin rpy="-1.57075 0 0" xyz="0 0 0"/>
+      <mass value="0.001"/>
+      <inertia
+        ixx=".01" ixy="0.0" ixz="0.0"
+        iyy=".01" iyz="0.0"
+        izz=".01"/>
+    </inertial>
+
     <visual>
       <geometry>
         <box size =".001 .001 .001"/>
@@ -77,7 +159,7 @@
     </visual>
   </link>
 
-  <joint name="left_front_wheel" type="continuous">
+  <joint name="left_front_wheel_joint" type="continuous">
     <parent link="left_front_steering"/>
     <child link="left_front_wheel"/>
     <origin xyz="0.0 0.0 0.0"/>
@@ -85,6 +167,22 @@
   </joint>
 
   <link name="left_front_wheel">
+    <collision>
+      <origin xyz="0 0 0" rpy="-1.57075 0 0"/>
+      <geometry>
+        <cylinder radius="0.035" length="0.025"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin rpy="-1.57075 0 0" xyz="0 0 0"/>
+      <mass value="0.001"/>
+      <inertia
+        ixx=".01" ixy="0.0" ixz="0.0"
+        iyy=".01" iyz="0.0"
+        izz=".01"/>
+    </inertial>
+
     <visual>
       <geometry>
         <mesh filename="package://robot_description/models/car_robot/meshes/wheel.dae"/>
@@ -96,7 +194,7 @@
   <joint name="base_link_to_body" type="fixed">
     <parent link="base_link"/>
     <child link="body"/>
-    <origin xyz="0 0 0.054"/>
+    <origin xyz="0 0 0.0325"/>
     <axis   xyz="0 1 0"/>
   </joint>
 
