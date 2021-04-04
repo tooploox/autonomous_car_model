@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<robot name="car">
+    <material name="gray">
+      <color rgba="0.8 0.8 0.8 1"/>
+    </material>
+
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size =".001 .001 .001"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+
+  <link name="body">
+    <visual>
+      <geometry>
+        <!--Dimensions: 37x20xheight   height may very depending on components, should be ~20cm-->
+        <mesh filename="package://robot_description/models/car_robot/meshes/car.dae"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0.147 0 0.063"/>
+      <material name="gray"/>
+    </visual>
+  </link>
+
+  <joint name="base_link_to_right_front_steering" type="revolute">
+    <parent link="base_link"/>
+    <child link="right_front_steering"/>
+    <origin xyz="0.28 -0.08 0.054"/>
+    <axis   xyz="0 0 1"/>
+    <limit lower="-0.87" upper="0.87" effort="1000" velocity="1000"/>
+  </joint>
+
+  <link name="right_front_steering">
+    <visual>
+      <geometry>
+        <box size =".001 .001 .001"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+
+  <joint name="right_front_steering_to_right_front_wheel" type="continuous">
+    <parent link="right_front_steering"/>
+    <child link="right_front_wheel"/>
+    <origin xyz="0.0 0.0 0.0"/>
+    <axis   xyz="0 1 0"/>
+  </joint>
+
+  <link name="right_front_wheel">
+    <visual>
+      <geometry>
+        <!--        Diameter: 6.5cm, width: 2.5cm-->
+        <mesh filename="package://robot_description/models/car_robot/meshes/wheel.dae"/>
+      </geometry>
+      <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+
+  <joint name="base_link_to_left_front_steering" type="revolute">
+    <parent link="base_link"/>
+    <child link="left_front_steering"/>
+    <origin xyz="0.28 0.079 0.054"/>
+    <axis   xyz="0 0 1"/>
+    <limit lower="-0.87" upper="0.87" effort="1000" velocity="1000"/>
+  </joint>
+
+  <link name="left_front_steering">
+    <visual>
+      <geometry>
+        <box size =".001 .001 .001"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+
+  <joint name="left_front_steering_to_left_front_wheel" type="continuous">
+    <parent link="left_front_steering"/>
+    <child link="left_front_wheel"/>
+    <origin xyz="0.0 0.0 0.0"/>
+    <axis   xyz="0 1 0"/>
+  </joint>
+
+  <link name="left_front_wheel">
+    <visual>
+      <geometry>
+        <mesh filename="package://robot_description/models/car_robot/meshes/wheel.dae"/>
+      </geometry>
+      <origin rpy="-1.57075 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+
+  <joint name="base_link_to_body" type="fixed">
+    <parent link="base_link"/>
+    <child link="body"/>
+    <origin xyz="0 0 0.054"/>
+    <axis   xyz="0 1 0"/>
+  </joint>
+
+
+  <joint name="body_to_right_rear_wheel" type="continuous">
+    <parent link="body"/>
+    <child link="right_rear_wheel"/>
+    <origin xyz="0 -0.08 0.0"/>
+    <axis   xyz="0 1 0"/>
+  </joint>
+
+  <link name="right_rear_wheel">
+    <visual>
+      <geometry>
+        <mesh filename="package://robot_description/models/car_robot/meshes/wheel.dae"/>
+      </geometry>
+      <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+
+  <joint name="body_to_left_rear_wheel" type="continuous">
+    <parent link="body"/>
+    <child link="left_rear_wheel"/>
+    <origin xyz="0 0.079 0.0"/>
+    <axis   xyz="0 1 0"/>
+  </joint>
+
+  <link name="left_rear_wheel">
+    <visual>
+      <geometry>
+        <mesh filename="package://robot_description/models/car_robot/meshes/wheel.dae"/>
+      </geometry>
+      <origin rpy="-1.57075 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+
+</robot>
