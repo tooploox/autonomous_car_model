@@ -1,5 +1,5 @@
 # Autonomous car model [WIP]
-![project overview](overview.JPG)  
+![project overview](media/overview.JPG)  
 We're building a model of an autonomous car using ROS framework. The idea is to have a fully functional car in 1:10 scale that we can use for experiments, development and testing of Computer Vision and Machine Learning algorithms.
 
 ## Environment
@@ -7,12 +7,28 @@ Currently, we're working on ROS Melodic running on **Jetson Nano**. The distribu
 
 ### Preparing the environment
 1. Install ROS as described here: http://wiki.ros.org/melodic/Installation/Ubuntu
-2. Install additional dependencies:  
+2. Install additional dependencies (in the future it should be automated):  
 `apt-get install ros-melodic-rosbridge-server`
-3. Build the project:
+3. Activate the workspace by running `devel/setup.bash` script. For convenience, it's recommended to add this command to bashrc script.  
+   `source /media/adam/data/Projects/car_robot/catkin_ws/devel/setup.bash`
+4. Build the project:
 Navigate to the [catkin_ws](catkin_ws) directory and run `catkin_make`
    
-## Using ROS
+## Simulation
+As using the actual robot is to always possible or convenient we recreated it in the simulated environment. This way it should be easier to develop and test solutions that can be then executed on the real car model as well.
+
+### Model description
+You can visualize the robot model in rozviz (tested in ROS Noetic) and interact with the model's joints using a simple GUI.
+To do so run:  
+`roslaunch robot_description urdf_visualize.launch`
+
+You should see a visualization like this:
+![project overview](media/urdf_viz.png)
+
+### Gazebo simulation
+Not implemented yet
+   
+## Using ROS on actual car model
 1. (optional) Connect the sensors, motor and servo to pins as specified in the [launch file](catkin_ws/src/car_bringup/launch/start_all.launch) (or modify the file accordingly.) You can run the code on Jetson without any hardware connected to it.
 2. From anywhere in the system run:  
 `roslaunch car_bringup start_all.launch'
