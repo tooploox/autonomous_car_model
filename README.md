@@ -24,6 +24,10 @@ To do so run:
 
 You should see a visualization like this:
 ![project overview](media/urdf_viz.png)
+Dimensions of the wheels and spacing between them match the actual robot.
+The cubature of the body is roughly the same as in the reality. 
+
+Sensors are not included yet.
 
 ### Gazebo simulation
 Not implemented yet
