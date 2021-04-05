@@ -1,6 +1,6 @@
 <launch>
 
-  <param name="robot_description" command="cat $(find robot_description)/urdf/car.urdf" />
+  <param name="robot_description" command="$(find xacro)/xacro '$(find robot_description)/urdf/car.urdf.xacro'"/>
 
   <!-- send fake joint values -->
   <arg name="use_gui" default="true" doc="Should the joint_state_publisher use a GUI for controlling joint states" />

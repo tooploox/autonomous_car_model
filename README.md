@@ -110,3 +110,4 @@ We're just learning ROS so in its current state the organisation of the code is 
    https://github.com/richardw05/mybot_ws.git
 4. Courses on: https://www.theconstructsim.com/ This is a paid platform. Courses are delivered in a form of notebooks to execute in the interactive shell. Recorded videos could be better, but still it's the best place when it comes to the coverage of topics and good practices.
 5. Production package for controlling cars, bitbucket repo: https://bitbucket.org/DataspeedInc/dbw_mkz_ros/src/master/
+6. Ackermann steering robot: http://wiki.ros.org/Robots/CIR-KIT-Unit03

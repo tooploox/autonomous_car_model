@@ -18,10 +18,20 @@
     <arg name="debug" value="$(arg debug)"/>
   </include>
 
-
-  <param name="robot_description" command="cat $(find robot_description)/urdf/car.urdf"/>
-
+  <param name="robot_description" command="$(find xacro)/xacro '$(find robot_description)/urdf/car.urdf.xacro'"/>
   <node name="car_spawn" pkg="gazebo_ros" type="spawn_model" output="screen"
    args="-urdf -param robot_description -model car" />
+
+  <rosparam file="$(find robot_description)/config/controller.yaml" command="load"/>
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+    output="screen" ns="/car"
+    args="right_steering_position_controller left_steering_position_controller left_drive_position_controller right_drive_position_controller front_left_drive_position_controller front_right_drive_position_controller joint_state_controller"/>
+
+  <!-- convert joint states to TF transforms for rviz, etc -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+    respawn="false" output="screen">
+    <remap from="/joint_states" to="/car/joint_states" />
+  </node>
+
 
 </launch>
