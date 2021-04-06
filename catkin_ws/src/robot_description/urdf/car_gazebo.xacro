@@ -11,31 +11,31 @@
   </gazebo>
 
   <gazebo reference="right_front_steering">
-    <kp>100000.0</kp>
-    <kd>100000.0</kd>
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
+    <mu1 value="200.0"/>
+    <mu2 value="100.0"/>
+    <kp value="10000000.0" />
+    <kd value="1.0" />
   </gazebo>
 
   <gazebo reference="left_front_steering">
-    <kp>100000.0</kp>
-    <kd>100000.0</kd>
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
+    <mu1 value="200.0"/>
+    <mu2 value="100.0"/>
+    <kp value="10000000.0" />
+    <kd value="1.0" />
   </gazebo>
 
   <gazebo reference="left_rear_wheel">
-    <kp>100000.0</kp>
-    <kd>100000.0</kd>
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
+    <mu1 value="200.0"/>
+    <mu2 value="100.0"/>
+    <kp value="10000000.0" />
+    <kd value="1.0" />
   </gazebo>
 
   <gazebo reference="right_rear_wheel">
-    <kp>100000.0</kp>
-    <kd>100000.0</kd>
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
+    <mu1 value="200.0"/>
+    <mu2 value="100.0"/>
+    <kp value="10000000.0" />
+    <kd value="1.0" />
   </gazebo>
 
 </robot>
