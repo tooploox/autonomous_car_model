@@ -13,11 +13,9 @@ Naturally, to interact with the actual hardware you'd need the access to it. In 
 If you don't have the access to the real hardware you can work in the simulated environment. You'll still need ROS installed on your computer though. Please note that the Python code should work with both, version 2 and 3 (full transition to Python 3 is planned). 
 
 1. Install ROS as described here: http://wiki.ros.org/melodic/Installation/Ubuntu
-2. Install additional dependencies (in the future it should be automated):  
-`apt-get install ros-melodic-rosbridge-server`
-3. Activate the workspace by running `devel/setup.bash` script. For convenience, it's recommended to add a similar command to bashrc script.  
+2. Activate the workspace by running `devel/setup.bash` script. For convenience, it's recommended to add a similar command to bashrc script.  
    `source <ABSOLUTE PATH REQUIRED>/catkin_ws/devel/setup.bash`
-4. Build the project:
+3. Build the project:
 Navigate to the [catkin_ws](catkin_ws) directory and run `catkin_make`
    
 ## Simulation
@@ -67,7 +65,8 @@ We're just learning ROS so in its current state the organisation of the code is 
    - [x] Create basic working URDF description
    - [x] Add custom 3D meshes
    - [x] Create a basic Gazebo world
-   - [x] Spawn the basic, not functional model in Gazebo.
+   - [x] Make it possible to spawn the basic, not functional model in Gazebo.
+   - [ ] **Change the URDF definition, so the model reflects the real robot better, namely there is a single joint for steering. This is a reasonable example: https://github.com/srmainwaring/steer_bot**
    - [ ] Add actuators
    - [ ] Make the URDF file cleaner by using XACRO / refactor, change objects names
    - [ ] Crate a model's controller
@@ -76,7 +75,7 @@ We're just learning ROS so in its current state the organisation of the code is 
 
 ### General
 - [ ] Reorganise the packages, so the structure makes more sense
-- [ ] Replace incorrectly used Twist messages published on \cmd_vel topic with the [ackermann_msg](http://wiki.ros.org/ackermann_msgs). Other solution may be more suitable. Messages should reflect the workings of the actual robot/car. Here's a production solution for a CAN based control: https://bitbucket.org/DataspeedInc/dbw_mkz_ros/src/master/
+- [ ] Correct the utilization of Twist messages. This is a big topic. My idea for now is to use ackermann steering controller like here: https://github.com/srmainwaring/steer_bot. But maybe we should have another controller to control the robot like in CARLA simulator. 
 - [ ] Implement a basic autonomous logic (ex. brake when any of the ultrasonic sensors shows a small distance).
 - [ ] Add tests
   - [ ] Node level tests
@@ -85,22 +84,21 @@ We're just learning ROS so in its current state the organisation of the code is 
 
 ## Plans for the future
 1. Install Lidar, run SLAM
-2. Implement path planning
-3. Implement image segmentation, drivable area detection
-4. Design environment-specific autonomous logic.
-5. ...
+2. Add interface for CARLA simulator 
+3. Implement path planning
+4. Implement image segmentation, drivable area detection
+5. Design environment-specific autonomous logic.
+6. ...
 
 ## Resources
 
 ### Our posts on Medium:
 `To be linked`
 
-<span style="color:gray">
-1. Collecting hardware <br>
-2. Controlling the steering servo and motor, Jetson Nano GPIO setup <br>
-3. Sensors - what they do and how to access them on Jetson. <br>
-4. Simulated environment <br>
-</span>
+1. Collecting hardware ([draft](https://medium.com/@adam.slucki/building-an-autonomous-car-76d8b9dfb86b))
+2. Controlling the steering servo and motor, Jetson Nano GPIO setup ([draft](https://medium.com/@adam.slucki/building-an-autonomous-car-3321b2be101e))
+3. Sensors - what they do and how to access them on Jetson.
+4. Simulated environment
    
 ### Learning ROS:
 1. Good udemy course to get started: https://www.udemy.com/course/ros-for-beginners/
