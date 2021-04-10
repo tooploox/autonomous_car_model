@@ -50,37 +50,10 @@ You'll be able to:
 4. Access accelerometer and gyroscope readings.
 5. Visualize the model in rozviz and interact with its joints.
 
-## TODO lists
+## TODO
 We're just learning ROS so in its current state the organisation of the code is not ideal, and some solutions may suboptimal/have a temporary character.  
+Please refere to [Issues](https://github.com/tooploox/car_robot/issues) for the details. 
 
-### Robot side
-- [ ] Replace a motor, test VESC, try to achieve a good low speed control.
-- [ ] Mock GPIO imports, so the code can be executed on a PC.
-- [ ] Refactor the communication with ultrasonic sensors, so they use interruptions instead of the `while loops`.
-- [ ] Add support for additional sensors - magnetometer, motor encoder, possibly motor temperature sensor (analog <> digital converter required), GPS.
-- [ ] Visualize the car's pitch, roll, yaw and heading in real time using OpenGL.
-
-### Simulation side
-- [ ] Add robot description and support Gazebo simulation
-   - [x] Create basic working URDF description
-   - [x] Add custom 3D meshes
-   - [x] Create a basic Gazebo world
-   - [x] Make it possible to spawn the basic, not functional model in Gazebo.
-   - [ ] **Change the URDF definition, so the model reflects the real robot better, namely there is a single joint for steering. This is a reasonable example: https://github.com/srmainwaring/steer_bot**
-   - [ ] Add actuators
-   - [ ] Make the URDF file cleaner by using XACRO / refactor, change objects names
-   - [ ] Crate a model's controller
-   - [ ] Check the accuracy of physical parameters used for simulation
-   - [ ] Support sensors
-
-### General
-- [ ] Reorganise the packages, so the structure makes more sense
-- [ ] Correct the utilization of Twist messages. This is a big topic. My idea for now is to use ackermann steering controller like here: https://github.com/srmainwaring/steer_bot. But maybe we should have another controller to control the robot like in CARLA simulator. 
-- [ ] Implement a basic autonomous logic (ex. brake when any of the ultrasonic sensors shows a small distance).
-- [ ] Add tests
-  - [ ] Node level tests
-  - [ ] ROS level tests
-  - [ ] Integration tests
 
 ## Plans for the future
 1. Install Lidar, run SLAM
