@@ -15,8 +15,10 @@ If you don't have the access to the real hardware you can work in the simulated 
 1. Install ROS as described here: http://wiki.ros.org/melodic/Installation/Ubuntu
 2. Activate the workspace by running `devel/setup.bash` script. For convenience, it's recommended to add a similar command to bashrc script.  
    `source <ABSOLUTE PATH REQUIRED>/catkin_ws/devel/setup.bash`
-3. Build the project:
-Navigate to the [catkin_ws](catkin_ws) directory and run `catkin_make`
+3. Build the project:  
+3.1 Clone the repo to the `src` directory in your catkin workspace:  
+   `git clone https://github.com/tooploox/autonomous_car_model.git`
+3.2 From your catkin workspace run `catkin_make`
    
 ## Simulation
 As using the actual robot is to always possible or convenient we recreated it in the simulated environment. This way it should be easier to develop and test solutions that can be then executed on the real car model as well.
