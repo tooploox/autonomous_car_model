@@ -8,6 +8,12 @@ Currently, we're working on ROS Melodic running on **Jetson Nano**. The distribu
 Packages and nodes within them can be developed independently. **Individual nodes can be implemented in Python or C++**.
 
 ### Preparing the environment
+```diff
+- WARNING! Keeping the whole workspace in a repo doesn't seem like a good practice.
+- In the near future the structure will be reorganized
+- and individual packages will be moved to the top level of the repo.
+```
+
 Naturally, to interact with the actual hardware you'd need the access to it. In such case ROS must be installed on the robot.  
 
 If you don't have the access to the real hardware you can work in the simulated environment. You'll still need ROS installed on your computer though. Please note that the Python code should work with both, version 2 and 3 (full transition to Python 3 is planned). 
