@@ -8,12 +8,6 @@ Currently, we're working on ROS Melodic running on **Jetson Nano**. The distribu
 Packages and nodes within them can be developed independently. **Individual nodes can be implemented in Python or C++**.
 
 ### Preparing the environment
-```diff
-- WARNING! Keeping the whole workspace in a repo doesn't seem like a good practice.
-- In the near future the structure will be reorganized
-- and individual packages will be moved to the top level of the repo.
-```
-
 Naturally, to interact with the actual hardware you'd need the access to it. In such case ROS must be installed on the robot.  
 
 If you don't have the access to the real hardware you can work in the simulated environment. You'll still need ROS installed on your computer though. Please note that the Python code should work with both, version 2 and 3 (full transition to Python 3 is planned). 
@@ -21,8 +15,10 @@ If you don't have the access to the real hardware you can work in the simulated 
 1. Install ROS as described here: http://wiki.ros.org/melodic/Installation/Ubuntu
 2. Activate the workspace by running `devel/setup.bash` script. For convenience, it's recommended to add a similar command to bashrc script.  
    `source <ABSOLUTE PATH REQUIRED>/catkin_ws/devel/setup.bash`
-3. Build the project:
-Navigate to the [catkin_ws](catkin_ws) directory and run `catkin_make`
+3. Copy and build the project:
+   1. Clone the repo to the `src` directory in your catkin workspace:  
+   `git clone https://github.com/tooploox/autonomous_car_model.git`
+   2. From your catkin workspace run `catkin_make`
    
 ## Simulation
 As using the actual robot is to always possible or convenient we recreated it in the simulated environment. This way it should be easier to develop and test solutions that can be then executed on the real car model as well.
