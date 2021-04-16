@@ -1,3 +1,5 @@
+[![Documentation Status](https://readthedocs.org/projects/autonomous-car-model/badge/?version=latest)](https://autonomous-car-model.readthedocs.io/en/latest/?badge=latest)
+
 # Autonomous car model [WIP]
 ![project overview](media/overview.JPG)  
 We're building a model of an autonomous car using ROS framework. The idea is to have a fully functional car in 1:10 scale that we can use for experiments, development and testing of Computer Vision and Machine Learning algorithms.
