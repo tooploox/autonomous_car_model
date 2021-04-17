@@ -1,7 +1,7 @@
 [![Documentation Status](https://readthedocs.org/projects/autonomous-car-model/badge/?version=latest)](https://autonomous-car-model.readthedocs.io/en/latest/?badge=latest)
 
 # Autonomous car model [WIP]
-![project overview](media/overview.JPG)  
+![project overview](docs/source/images/overview.JPG)  
 We're building a model of an autonomous car using ROS framework. The idea is to have a fully functional car in 1:10 scale that we can use for experiments, development and testing of Computer Vision and Machine Learning algorithms.
 
 ## Environment
@@ -15,8 +15,7 @@ Naturally, to interact with the actual hardware you'd need the access to it. In 
 If you don't have the access to the real hardware you can work in the simulated environment. You'll still need ROS installed on your computer though. Please note that the Python code should work with both, version 2 and 3 (full transition to Python 3 is planned). 
 
 1. Install ROS as described here: http://wiki.ros.org/melodic/Installation/Ubuntu
-2. Activate the workspace by running `devel/setup.bash` script. For convenience, it's recommended to add a similar command to bashrc script.  
-   `source <ABSOLUTE PATH REQUIRED>/catkin_ws/devel/setup.bash`
+2. Create and activate a catkin workspace
 3. Copy and build the project:
    1. Clone the repo to the `src` directory in your catkin workspace:  
    `git clone https://github.com/tooploox/autonomous_car_model.git`
@@ -31,7 +30,7 @@ To do so run:
 `roslaunch robot_description urdf_visualize.launch`
 
 You should see a visualization like this:
-![project overview](media/urdf_viz.png)
+![project overview](docs/source/images/urdf_viz.png)
 Dimensions of the wheels and spacing between them match the actual robot.
 The cubature of the body is roughly the same as in the reality. 
 
