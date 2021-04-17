@@ -1,0 +1,18 @@
+<launch>
+
+  <node name="test_node" pkg="hardware_control" type="CarRobot" respawn="false"
+    output="screen" ns="/car" />
+
+  <!-- Load joint controller configurations from YAML file to parameter server -->
+  <rosparam file="$(find robot_description)/config/ackermann_control.yaml" command="load"/>
+  <param name="robot_description" command="$(find xacro)/xacro '$(find robot_description)/urdf/car.urdf_temp.xacro'"/>
+
+  <node pkg="controller_manager" type="spawner" name="base_controller_spawner" respawn="false"
+        ns="/car" args="joint_state_publisher ackermann_steering" output="screen"/>
+
+  <!-- Launch the robot state publisher -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+    <remap from="/joint_states" to="/car/joint_states" />
+  </node>
+
+</launch>
