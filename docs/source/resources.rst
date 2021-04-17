@@ -20,3 +20,8 @@ Automotive-focused
 ==================
 1. Production package for controlling cars, bitbucket repo: https://bitbucket.org/DataspeedInc/dbw_mkz_ros/src/master/
 2. ROS for automotive, free course: https://www.apex.ai/autoware-course
+
+Our blogposts
+=============
+1. `Collecting the hardware <https://medium.com/@adam.slucki/building-an-autonomous-car-76d8b9dfb86b>`_
+2. `PWM, intro and setup on Jetson <https://medium.com/@adam.slucki/building-an-autonomous-car-3321b2be101e>`_

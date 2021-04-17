@@ -42,7 +42,7 @@ http://wiki.ros.org/noetic/Installation
 To install ROS Noetic on Jetson which is running Ubuntu 18, you'll have to build it from source first. Follow these instructions: http://wiki.ros.org/noetic/Installation/Source
 
 **Mac OSX/Windows:**
-Unfortunately those systems are poorly or not supported. You'll need a virtual machine with Ubuntu or Debian. On Mac OSX you can also work in docker but we don't find it very comfortable, especially with GUI programmes like Gazebo or rozviz. But still this is an option. The best solution we've tested was this: https://github.com/nebocleaning/mac-ros/tree/e0e2c71089a5eb56b08d39d6cc41737d56e58e27
+Unfortunately those systems are poorly or not supported. You'll need a virtual machine with Ubuntu or Debian. On Mac OSX you can also work in docker but we don't find it very comfortable, especially with GUI programmes like Gazebo or rviz. But still this is an option. The best solution we've tested was this: https://github.com/nebocleaning/mac-ros/tree/e0e2c71089a5eb56b08d39d6cc41737d56e58e27
 
 .. note::
     When using the docker based solution presented above you'll have to specify environmental variables in two env files (see the linked repo). It might not be obvious how to find ROS master URI. To find out you can initially ignore that variable and:
