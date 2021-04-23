@@ -116,32 +116,42 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        left_front_steering:
+        front_steer_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        left_front_wheel:
+        front_right_steer_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        left_rear_wheel:
+        front_left_steer_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        right_front_steering:
+        front_right_wheel_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        right_front_wheel:
+        front_left_wheel_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        right_rear_wheel:
+        rear_right_wheel_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        rear_left_wheel_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        rear_wheel_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
