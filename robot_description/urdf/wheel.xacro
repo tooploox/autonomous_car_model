@@ -17,7 +17,7 @@
   <!-- Properties -->
   <xacro:property name="steer_effort" value="10.0"/>
   <xacro:property name="steer_velocity" value="5.0"/>
-  <xacro:property name="steer_limit_deg" value="45.0"/>
+  <xacro:property name="steer_limit_deg" value="60.0"/>
 
   <!-- Wheel visualization macro -->
   <xacro:macro name="wheel_visual" params="roll">
@@ -184,7 +184,6 @@
     </gazebo>
     
     <gazebo reference="${name}_wheel_link">
-      <material>Gazebo/Red</material>
     </gazebo>
   </xacro:macro>
 
@@ -231,7 +230,6 @@
     </transmission>
 
     <gazebo reference="${name}_wheel_link">
-      <material>Gazebo/Red</material>
     </gazebo>
   </xacro:macro>
 
