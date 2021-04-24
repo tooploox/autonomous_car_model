@@ -110,7 +110,7 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <cylinder radius="${steer_radius}" length="${steer_thickness}"/>
+          <cylinder radius="${steer_radius/4}" length="${steer_thickness/4}"/>
         </geometry>
         <material name="blue" />
       </visual>

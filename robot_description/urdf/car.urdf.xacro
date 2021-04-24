@@ -17,6 +17,7 @@
 <robot name="car" xmlns:xacro="http://wiki.ros.org/xacro">
   <!-- Include xacro for inertials, materials and wheels -->
   <xacro:include filename="$(find robot_description)/urdf/wheel.xacro"/>
+  <xacro:include filename="$(find robot_description)/urdf/lidar.xacro"/>
 
   <xacro:property name="robot_namespace" value="/car"/>
    <gazebo>
@@ -28,7 +29,6 @@
       <legacyModeNS>false</legacyModeNS>
     </plugin>
   </gazebo>
-
 
   <!-- Math constants -->
   <xacro:property name="deg_to_rad" value="0.01745329251994329577"/>
@@ -74,7 +74,6 @@
             <box size="0.001 0.001 0.001"/>
         </geometry>
     </collision>
-
     <xacro:dummy_visual />
   </link>
 
@@ -96,7 +95,6 @@
       <geometry>
         <!--Dimensions: 37x20xheight   height may very depending on components, should be ~20cm-->
         <mesh filename="package://robot_description/models/car_robot/meshes/car.dae"/>
-        <box size="${car_length} ${car_width} ${car_height}"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0.01 0 0"/>
       <xacro:default_origin />
@@ -185,9 +183,9 @@
     <origin xyz="${-axle_offset} 0 0" rpy="${-90 * deg_to_rad} 0 0"/>
   </xacro:rear_wheel>
 
-  <!-- Colour -->
+  <xacro:lidar parent="base_link"/>
+
   <gazebo reference="base_link">
-    <material>Gazebo/Green</material>
   </gazebo>
 
 </robot>
