@@ -1,65 +1,57 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="car">
+<!--
+  Robot model adapted from https://github.com/CIR-KIT/steer_drive_ros/blob/kinetic-devel/steer_drive_controller/test/common/urdf/steerbot.xacro
+  Modifications:
+    Remove base_footprint link. Useful for navigation but not necessary for a simple example.
+    Added materials for URDF
+    Updated inertials
+  Geometry:
+    The Ackermann steering controllers require the longitudinal
+    separation between the front and back wheel axes and the
+    lateral separation between the left and right front steering axes.
+    
+    For this model:
+    wheel_separation_h = 2 * axle_offset = 0.28
+    wheel_separation_w = car_width - 2 * 0.5 * wheel_thickness = 0.155
+-->
+<robot name="car" xmlns:xacro="http://wiki.ros.org/xacro">
+  <!-- Include xacro for inertials, materials and wheels -->
+  <xacro:include filename="$(find robot_description)/urdf/wheel.xacro"/>
+  <xacro:include filename="$(find robot_description)/urdf/lidar.xacro"/>
 
+  <xacro:property name="robot_namespace" value="/car"/>
+   <gazebo>
+    <!-- Load ros_control plugin using the steer_bot_hardware_gazebo
+    implementation of the hardware_interface::RobotHW -->
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>${robot_namespace}</robotNamespace>
+      <robotSimType>steer_bot_hardware_gazebo/SteerBotHardwareGazebo</robotSimType>
+      <legacyModeNS>false</legacyModeNS>
+    </plugin>
+  </gazebo>
+
+  <!-- Math constants -->
+  <xacro:property name="deg_to_rad" value="0.01745329251994329577"/>
+
+  <!-- Robot dimensions -->
+  <xacro:property name="car_length" value="0.4" /> 
+  <xacro:property name="car_width" value="0.18" /> 
+  <xacro:property name="car_height" value="0.18" /> 
+  <xacro:property name="car_mass" value="2" />
+
+  <!-- Wheel link dimensions -->
   <xacro:property name="wheel_radius" value="0.0325" />
-  <xacro:property name="wheel_width" value="0.025" />
+  <xacro:property name="wheel_thickness" value="0.025" />
+  <xacro:property name="wheel_mass" value="0.00355" />
 
-  <xacro:include filename="$(find robot_description)/urdf/car_gazebo.xacro" />
+  <!-- Steering link dimensions -->
+  <xacro:property name="steer_radius" value="0.02" />
+  <xacro:property name="steer_thickness" value="0.004" />
+  <xacro:property name="steer_mass" value="0.0008" />
 
-  <!--
-  Macros with multiple, or multiple and block params can be used like this
-  (asterisk is required for block params):
-      <xacro:macro name="multi_param_example" params="x_offset *shape">
-            <visual>
-                <origin rpy="0.0 0 0" xyz="${x_offset} 0 0"/>
-                <geometry>
-                    <xacro:insert_block name="shape" />
-                </geometry>
-            </visual>
-      </xacro:macro>
-
-      ...
-
-      <link name="sample_link">
-        <xacro:multi_param_example x_offset="0.01">
-            <cylinder radius="3" length="20"/>
-        </xacro:multi_param_example>
-      </link>
-  -->
-
-
-  <xacro:macro name="default_origin">
-       <origin xyz="0 0 0" rpy="0 0 0"/>
-  </xacro:macro>
-
-  <xacro:macro name="wheel_collision" params="roll">
-    <collision>
-        <origin xyz="0 0 0" rpy="${roll} 0 0"/>
-        <geometry>
-          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
-        </geometry>
-    </collision>
-  </xacro:macro>
-
-  <xacro:macro name="wheel_inertial" params="roll">
-    <inertial>
-      <origin rpy="${roll} 0 0" xyz="0 0 0"/>
-      <mass value="0.001"/>
-      <inertia
-        ixx=".01" ixy="0.0" ixz="0.0"
-        iyy=".01" iyz="0.0"
-        izz=".01"/>
-    </inertial>
-  </xacro:macro>
-
-  <xacro:macro name="wheel_visual" params="roll">
-    <visual>
-      <geometry>
-        <mesh filename="package://robot_description/models/car_robot/meshes/wheel.dae"/>
-      </geometry>
-      <origin xyz="0 0 0" rpy="${roll} 0 0"/>
-    </visual>
-  </xacro:macro>
+  <!-- Axle positions -->
+  <xacro:property name="axle_offset" value="0.14" />
+  <xacro:property name="steer_offset" value="0.02" />
 
   <xacro:macro name="dummy_visual">
     <visual>
@@ -70,74 +62,11 @@
     </visual>
   </xacro:macro>
 
-  <transmission name="wheel_steering_tran_left">
-        <type>transmission_interface/SimpleTransmission</type>
-        <joint name="left_steering">
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-        </joint>
-        <actuator name="steering_motor_left">
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-            <mechanicalReduction>1</mechanicalReduction>
-        </actuator>
-  </transmission>
+  <xacro:macro name="default_origin">
+       <origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:macro>
 
-  <transmission name="wheel_steering_tran_right">
-        <type>transmission_interface/SimpleTransmission</type>
-        <joint name="right_steering">
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-        </joint>
-        <actuator name="steering_motor_right">
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-            <mechanicalReduction>1</mechanicalReduction>
-        </actuator>
-  </transmission>
-
-  <transmission name="drive_tran_left">
-        <type>transmission_interface/SimpleTransmission</type>
-        <joint name="left_rear_wheel_joint">
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-        </joint>
-        <actuator name="drive_motor_left">
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-            <mechanicalReduction>1</mechanicalReduction>
-        </actuator>
-  </transmission>
-
-  <transmission name="drive_tran_right">
-        <type>transmission_interface/SimpleTransmission</type>
-        <joint name="right_rear_wheel_joint">
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-        </joint>
-        <actuator name="drive_motor_right">
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-            <mechanicalReduction>1</mechanicalReduction>
-        </actuator>
-  </transmission>
-
-  <transmission name="drive_tran_front_left">
-        <type>transmission_interface/SimpleTransmission</type>
-        <joint name="left_front_wheel_joint">
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-        </joint>
-        <actuator name="drive_motor_front_left">
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-            <mechanicalReduction>1</mechanicalReduction>
-        </actuator>
-  </transmission>
-
-
-  <transmission name="drive_tran_front_right">
-        <type>transmission_interface/SimpleTransmission</type>
-        <joint name="right_front_wheel_joint">
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-        </joint>
-        <actuator name="drive_motor_front_right">
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-            <mechanicalReduction>1</mechanicalReduction>
-        </actuator>
-  </transmission>
-
-
+  <!-- Base link -->
   <link name="base_link">
     <collision>
         <xacro:default_origin />
@@ -145,21 +74,20 @@
             <box size="0.001 0.001 0.001"/>
         </geometry>
     </collision>
-
     <xacro:dummy_visual />
   </link>
 
   <link name="body">
-    <inertial>
-      <origin xyz="0.2 0 0.043" rpy="0 0 0"/>
-      <mass value="2.5" />
-      <inertia ixx="0.0332083" ixy="0.0" ixz="0.0" iyy="0.01302083" iyz="0.0" izz="0.03685416"/>
-    </inertial>
+    <xacro:solid_cuboid_inertial
+        rpy="0 0 0" xyz="0 0 0"
+        mass="${car_mass}"
+        x="${car_length}" y="${car_width}" z="${car_height}" />
 
     <collision>
-        <origin rpy="0 0 0" xyz="0.14 0 0.063"/>
+        <!-- <origin rpy="0 0 0" xyz="0.14 0 0.063"/> -->
+        <xacro:default_origin />
         <geometry>
-            <box size="0.45 0.2 0.15"/>
+            <box size="${car_length} ${car_width} ${car_height}"/>
         </geometry>
     </collision>
 
@@ -168,104 +96,96 @@
         <!--Dimensions: 37x20xheight   height may very depending on components, should be ~20cm-->
         <mesh filename="package://robot_description/models/car_robot/meshes/car.dae"/>
       </geometry>
-      <origin rpy="0 0 0" xyz="0.147 0 0.063"/>
+      <origin rpy="0 0 0" xyz="0.01 0 0"/>
+      <xacro:default_origin />
     </visual>
-  </link>
-
-  <joint name="right_steering" type="revolute">
-    <parent link="base_link"/>
-    <child link="right_front_steering"/>
-    <origin xyz="0.28 -0.08 ${wheel_radius}"/>
-    <axis  xyz="0 0 1"/>
-    <limit lower="-0.87" upper="0.87" effort="10000" velocity="500"/>
-  </joint>
-
-  <joint name="left_steering" type="revolute">
-    <parent link="base_link"/>
-    <child link="left_front_steering"/>
-    <origin xyz="0.28 0.079 ${wheel_radius}"/>
-    <axis   xyz="0 0 1"/>
-    <limit lower="-0.87" upper="0.87" effort="10000" velocity="500"/>
-  </joint>
-
-  <link name="right_front_steering">
-    <xacro:wheel_collision roll="1.57075"/>
-    <xacro:wheel_inertial roll="1.57075"/>
-    <xacro:dummy_visual />
-  </link>
-
-  <joint name="right_front_wheel_joint" type="continuous">
-    <parent link="right_front_steering"/>
-    <child link="right_front_wheel"/>
-    <xacro:default_origin />
-    <axis   xyz="0 1 0"/>
-    <limit effort="10000" velocity="1000"/>
-    <joint_properties damping="1.0" friction="1.0"/>
-  </joint>
-
-  <link name="right_front_wheel">
-    <xacro:wheel_collision roll="1.57075"/>
-    <xacro:wheel_inertial roll="1.57075"/>
-    <xacro:wheel_visual roll="1.57075"/>
-  </link>
-
-
-  <link name="left_front_steering">
-    <xacro:wheel_collision roll="1.57075"/>
-    <xacro:wheel_inertial roll="1.57075"/>
-    <xacro:dummy_visual />
-  </link>
-
-  <joint name="left_front_wheel_joint" type="continuous">
-    <parent link="left_front_steering"/>
-    <child link="left_front_wheel"/>
-    <xacro:default_origin />
-    <axis xyz="0 1 0"/>
-    <limit effort="10000" velocity="1000"/>
-    <joint_properties damping="1.0" friction="1.0"/>
-  </joint>
-
-  <link name="left_front_wheel">
-    <xacro:wheel_collision roll="-1.57075"/>
-    <xacro:wheel_inertial roll="-1.57075"/>
-    <xacro:wheel_visual roll="-1.57075"/>
   </link>
 
   <joint name="base_link_to_body" type="fixed">
     <parent link="base_link"/>
     <child link="body"/>
-    <origin xyz="0 0 ${wheel_radius}"/>
+    <origin xyz="0 0 ${wheel_radius*2}"/>
     <axis   xyz="0 1 0"/>
   </joint>
 
-  <joint name="right_rear_wheel_joint" type="continuous">
-    <parent link="body"/>
-    <child link="right_rear_wheel"/>
-    <origin xyz="0 -0.08 0.0"/>
-    <axis   xyz="0 1 0"/>
-    <limit effort="10000" velocity="1000"/>
-    <joint_properties damping="1.0" friction="1.0"/>
-  </joint>
+  <!-- Front steer and rear wheel joints required for ackermann_steering_controller -->
+  <xacro:front_steer
+    name="front"
+    parent="base"
+    steer_radius="${steer_radius}"
+    steer_thickness="${steer_thickness}" 
+    steer_mass="${steer_mass}"
+    axle_offset="${axle_offset}"
+    steer_height="${wheel_radius+steer_offset}">
+  </xacro:front_steer>
 
-  <link name="right_rear_wheel">
-    <xacro:wheel_collision roll="1.57075"/>
-    <xacro:wheel_inertial roll="1.57075"/>
-    <xacro:wheel_visual roll="1.57075"/>
-  </link>
+  <!-- Steerable front side wheels -->
+  <xacro:front_wheel_lr 
+    name="front_right"
+    parent="base"
+    reflect="-1"
+    wheel_radius="${wheel_radius}"
+    wheel_thickness="${wheel_thickness}" 
+    wheel_mass="${wheel_mass}" 
+    wheel_is_right="1"
+    steer_radius="${steer_radius}"
+    steer_thickness="${steer_thickness}" 
+    steer_mass="${steer_mass}" 
+    car_length="${car_length}"
+    car_width="${car_width}"
+    axle_offset="${axle_offset}"
+    steer_height="${wheel_radius+steer_offset}">
+  </xacro:front_wheel_lr>
+  <xacro:front_wheel_lr
+    name="front_left"
+    parent="base"
+    reflect="1"
+    wheel_radius="${wheel_radius}"
+    wheel_thickness="${wheel_thickness}"
+    wheel_mass="${wheel_mass}" 
+    wheel_is_right="0" 
+    steer_radius="${steer_radius}"
+    steer_thickness="${steer_thickness}" 
+    steer_mass="${steer_mass}" 
+    car_length="${car_length}"
+    car_width="${car_width}"
+    axle_offset="${axle_offset}"
+    steer_height="${wheel_radius+steer_offset}">
+  </xacro:front_wheel_lr>
 
-  <joint name="left_rear_wheel_joint" type="continuous">
-    <parent link="body"/>
-    <child link="left_rear_wheel"/>
-    <origin xyz="0 0.079 0.0"/>
-    <axis   xyz="0 1 0"/>
-    <limit effort="10000" velocity="1000"/>
-    <joint_properties damping="1.0" friction="1.0"/>
-  </joint>
+  <!-- Rear side wheels -->
+  <xacro:rear_wheel_lr
+    name="rear_right"
+    parent="base"
+    wheel_radius="${wheel_radius}"
+    wheel_thickness="${wheel_thickness}"
+    wheel_mass="${wheel_mass}"
+    wheel_is_right="1">
+    <origin xyz="${-axle_offset} ${-car_width/2+wheel_thickness/2} 0" rpy="${-90 * deg_to_rad} 0 0"/>
+  </xacro:rear_wheel_lr>
+  <xacro:rear_wheel_lr
+    name="rear_left"
+    parent="base"
+    wheel_radius="${wheel_radius}"
+    wheel_thickness="${wheel_thickness}"
+    wheel_mass="${wheel_mass}"
+    wheel_is_right="0">
+    <origin xyz="${-axle_offset} ${+car_width/2-wheel_thickness/2} 0" rpy="${-90 * deg_to_rad} 0 0"/>
+  </xacro:rear_wheel_lr>
 
-  <link name="left_rear_wheel">
-    <xacro:wheel_collision roll="-1.57075"/>
-    <xacro:wheel_inertial roll="-1.57075"/>
-    <xacro:wheel_visual roll="-1.57075"/>
-  </link>
+  <!-- rear drive wheel -->
+  <xacro:rear_wheel
+    name="rear"
+    parent="base"
+    wheel_radius="${wheel_radius/4}"
+    wheel_thickness="${wheel_thickness/2}"
+    wheel_mass="${wheel_mass/32}">
+    <origin xyz="${-axle_offset} 0 0" rpy="${-90 * deg_to_rad} 0 0"/>
+  </xacro:rear_wheel>
+
+  <xacro:lidar parent="base_link"/>
+
+  <gazebo reference="base_link">
+  </gazebo>
 
 </robot>
