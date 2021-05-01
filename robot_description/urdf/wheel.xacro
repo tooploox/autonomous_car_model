@@ -184,6 +184,8 @@
     </gazebo>
     
     <gazebo reference="${name}_wheel_link">
+      <kp>1e15</kp>
+      <kd>1e13</kd>
     </gazebo>
   </xacro:macro>
 
@@ -230,6 +232,8 @@
     </transmission>
 
     <gazebo reference="${name}_wheel_link">
+      <kp>1e15</kp>
+      <kd>1e13</kd>
     </gazebo>
   </xacro:macro>
 
@@ -327,7 +331,6 @@
     </joint>
 
     <gazebo reference="${name}_wheel_link">
-      <material>Gazebo/Yellow</material>
     </gazebo>
 
     <gazebo reference="${name}_wheel_joint">
