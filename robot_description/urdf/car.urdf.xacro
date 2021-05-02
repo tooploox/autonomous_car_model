@@ -18,6 +18,8 @@
   <!-- Include xacro for inertials, materials and wheels -->
   <xacro:include filename="$(find robot_description)/urdf/wheel.xacro"/>
   <xacro:include filename="$(find robot_description)/urdf/lidar.xacro"/>
+  <xacro:include filename="$(find robot_description)/urdf/_d435i.urdf.xacro"/>
+  <xacro:include filename="$(find robot_description)/urdf/inertials.xacro"/>
 
   <xacro:property name="robot_namespace" value="/car"/>
    <gazebo>
@@ -183,7 +185,21 @@
     <origin xyz="${-axle_offset} 0 0" rpy="${-90 * deg_to_rad} 0 0"/>
   </xacro:rear_wheel>
 
+  <!--  SENSORS-->
   <xacro:lidar parent="base_link"/>
+  <xacro:sensor_d435i parent="base_link"
+                      name="D435i_camera"
+                      topics_ns="D435i_camera"
+                      enable_pointCloud="true"
+                      color_width="960"
+                      color_height="520"
+                      align_depth="true"
+                      color_fps="30"
+                      depth_width="640"
+                      depth_height="360"
+                      depth_fps="30">
+    <origin xyz="0.0 0.0 0.15" rpy="0.0 0.0 0.0"/>
+  </xacro:sensor_d435i>
 
   <gazebo reference="base_link">
   </gazebo>
