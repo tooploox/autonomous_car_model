@@ -243,28 +243,28 @@
     params="
       name
       parent
-      wheel_radius
-      wheel_thickness
-      wheel_mass
+      drive_wheel_radius
+      drive_wheel_thickness
+      drive_wheel_mass
       *origin">
     <link name="${name}_wheel_link">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
+          <cylinder radius="${drive_wheel_radius}" length="${drive_wheel_thickness}"/>
         </geometry>
         <material name="yellow" />
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
+          <cylinder radius="${drive_wheel_radius}" length="${drive_wheel_thickness}"/>
         </geometry>
       </collision>
       <xacro:solid_cylinder_inertial 
           rpy="0 0 0" xyz="0 0 0"
-          mass="${wheel_mass}"
-          radius="${wheel_radius}" length="${wheel_thickness}" />
+          mass="${drive_wheel_mass}"
+          radius="${drive_wheel_radius}" length="${drive_wheel_thickness}" />
     </link>
 
     <joint name="${name}_wheel_joint" type="continuous">
