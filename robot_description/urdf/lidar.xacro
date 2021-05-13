@@ -1,0 +1,73 @@
+<?xml version="1.0" ?>
+<model name="lidar" xmlns:xacro="http://wiki.ros.org/xacro">
+
+  <xacro:macro name="lidar" params="parent">
+    <joint name="hokuyo_joint" type="fixed">
+      <axis xyz="0 1 0" />
+      <origin xyz="-0.01 0 0.18" rpy="0 0 0"/>
+      <parent link="${parent}"/>
+      <child link="car/hokuyo_link"/>
+    </joint>
+
+    <!-- Hokuyo Laser -->
+    <link name="car/hokuyo_link">
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.01" length="0.01"/>
+        </geometry>
+      </collision>
+
+      <visual>
+        <origin xyz="-0.06 0 -0.03" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://robot_description/models/car_robot/meshes/ydlidar.dae"/>
+        </geometry>
+      </visual>
+
+      <inertial>
+        <mass value="0.1" />
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+      </inertial>
+    </link>
+
+
+    <gazebo reference="car/hokuyo_link">
+      <material>Gazebo/DarkGrey</material>
+      <sensor type="ray" name="head_hokuyo_sensor">
+        <pose>0 0 0 0 0 0</pose>
+        <visualize>false</visualize>
+        <update_rate>40</update_rate>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>720</samples>
+              <resolution>1</resolution>
+              <min_angle>-3.145</min_angle>
+              <max_angle>3.145</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>0.10</min>
+            <max>8.0</max>
+            <resolution>0.01</resolution>
+          </range>
+          <noise>
+            <type>gaussian</type>
+            <!-- Noise parameters based on published spec for Hokuyo laser
+                 achieving "+-30mm" accuracy at range < 10m.  A mean of 0.0m and
+                 stddev of 0.01m will put 99.7% of samples within 0.03m of the true
+                 reading. -->
+            <mean>0.0</mean>
+            <stddev>0.001</stddev>
+          </noise>
+        </ray>
+        <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_laser.so">
+          <topicName>/car/laser/scan</topicName>
+          <frameName>hokuyo_link</frameName>
+        </plugin>
+      </sensor>
+    </gazebo>
+  </xacro:macro>
+</model>
