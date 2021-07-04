@@ -75,11 +75,12 @@ Clone the repository, install dependencies and build the project
 ----------------------------------------------------------------
 The repository should be cloned to the src directory in your catkin workspace. You can run the following commands to clone the repository and install dependencies. There are external github repositories that you'll need to clone before installing all the dependencies. You can use vcstool: https://github.com/dirk-thomas/vcstool for that.
 
-Optional
-~~~~~~~~
-We store external dependencies in a vcstool file with the *.repos* extension. You can clone the repositories listed there manually or install vcstool and use that instead.
+.. warning::
+    **The steps below assume that you have vcstool installed.**
 
-Run `sudo pip3 install vcstool` to install the latest version of vcstool. **The steps below assume that you have vcstool installed.**
+    We store external dependencies in a vcstool file with the *.repos* extension. You can clone the repositories listed there manually or install vcstool and use that instead.
+
+    Run `sudo pip3 install vcstool` to install the latest version of vcstool.
 
 .. code-block:: bash
 
