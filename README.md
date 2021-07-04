@@ -7,6 +7,9 @@ We're building a model of an autonomous car using ROS framework. The idea is to 
 ## Getting started
 Please check the documentation: https://autonomous-car-model.readthedocs.io/en/latest
 
+**Attention**
+Clone repositories listed in [download.repos](download.repos) before installing dependencies. You can do it manually or by using [vcstool](https://github.com/dirk-thomas/vcstool)
+
 ## Current state/functionality
 You'll be able to:
 1. Manually steer your car using the [nipple.js](https://yoannmoi.net/nipplejs/) joystick
@@ -23,6 +26,9 @@ You'll be able to:
 
 ![robot_gui](docs/source/images/robot_gui.gif)
 *Web GUI for manual steering and viewing sensors data*
+
+![working_robot](docs/source/images/manual_car.gif)
+*Manually controlled robot*
 
 ## TODO
 We're just learning ROS so in its current state the organisation of the code is not ideal, and some solutions may suboptimal/have a temporary character.  
