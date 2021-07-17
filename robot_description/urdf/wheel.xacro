@@ -17,7 +17,7 @@
   <!-- Properties -->
   <xacro:property name="steer_effort" value="10.0"/>
   <xacro:property name="steer_velocity" value="5.0"/>
-  <xacro:property name="steer_limit_deg" value="45.0"/>
+  <xacro:property name="steer_limit_deg" value="60.0"/>
 
   <!-- Wheel visualization macro -->
   <xacro:macro name="wheel_visual" params="roll">
@@ -110,7 +110,7 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <cylinder radius="${steer_radius}" length="${steer_thickness}"/>
+          <cylinder radius="${steer_radius/4}" length="${steer_thickness/4}"/>
         </geometry>
         <material name="blue" />
       </visual>
@@ -184,7 +184,8 @@
     </gazebo>
     
     <gazebo reference="${name}_wheel_link">
-      <material>Gazebo/Red</material>
+      <kp>1e15</kp>
+      <kd>1e13</kd>
     </gazebo>
   </xacro:macro>
 
@@ -231,7 +232,8 @@
     </transmission>
 
     <gazebo reference="${name}_wheel_link">
-      <material>Gazebo/Red</material>
+      <kp>1e15</kp>
+      <kd>1e13</kd>
     </gazebo>
   </xacro:macro>
 
@@ -245,28 +247,28 @@
     params="
       name
       parent
-      wheel_radius
-      wheel_thickness
-      wheel_mass
+      drive_wheel_radius
+      drive_wheel_thickness
+      drive_wheel_mass
       *origin">
     <link name="${name}_wheel_link">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
+          <cylinder radius="${drive_wheel_radius}" length="${drive_wheel_thickness}"/>
         </geometry>
         <material name="yellow" />
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
+          <cylinder radius="${drive_wheel_radius}" length="${drive_wheel_thickness}"/>
         </geometry>
       </collision>
       <xacro:solid_cylinder_inertial 
           rpy="0 0 0" xyz="0 0 0"
-          mass="${wheel_mass}"
-          radius="${wheel_radius}" length="${wheel_thickness}" />
+          mass="${drive_wheel_mass}"
+          radius="${drive_wheel_radius}" length="${drive_wheel_thickness}" />
     </link>
 
     <joint name="${name}_wheel_joint" type="continuous">
@@ -329,7 +331,6 @@
     </joint>
 
     <gazebo reference="${name}_wheel_link">
-      <material>Gazebo/Yellow</material>
     </gazebo>
 
     <gazebo reference="${name}_wheel_joint">

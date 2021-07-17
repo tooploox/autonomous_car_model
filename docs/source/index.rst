@@ -14,9 +14,10 @@ We're building a model of an autonomous car using ROS framework. The idea is to 
 
 Current status
 ==============
-* We have a car-like robot controlled using Jetson Nano with ROS.
+* We have a car-like robot controlled using Jetson Nano with ROS or a radio controller.
 * We've implemented manual steering and communication with sensors, both accessible form a web GUI.
 * There is also a 3D representation of the model that can be visualized in rviz.
+* Fully operational simulation in Gazebo.
 
 Contents
 ========

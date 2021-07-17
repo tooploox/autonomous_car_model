@@ -1,41 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
 
-  <arg name="world" default="empty"/>
-  <arg name="paused" default="false"/>
-  <arg name="use_sim_time" default="true"/>
-  <arg name="gui" default="true"/>
-  <arg name="headless" default="false"/>
-  <arg name="debug" default="false"/>
+<arg name="model" default="$(find robot_description)/urdf/car.urdf.xacro"/>
+    <arg name="namespace" default="/car" />
+    <arg name="world_name" default="worlds/empty_world" />
+    <arg name="cmd_timeout" default="0.5"/>
+    <arg name="x" default="0.0"/>
+    <arg name="y" default="0.0"/>
+    <arg name="z" default="0.0325" /> <!-- wheel_radius from car's urdf description -->
+    <arg name="roll" default="0.0"/>
+    <arg name="pitch" default="0.0"/>
+    <arg name="yaw" default="0.0"/>
 
-  <include file="$(find gazebo_ros)/launch/empty_world.launch">
-<!--     <arg name="world_name" value="$(find robot_gazebo)/worlds/playground.world"/> -->
-    <arg name="world_name" value="empty"/>
-    <arg name="paused" value="$(arg paused)"/>
-    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
-    <arg name="gui" value="$(arg gui)"/>
-    <arg name="headless" value="$(arg headless)"/>
-    <arg name="debug" value="$(arg debug)"/>
-  </include>
+    <group ns="$(arg namespace)">
 
-  <param name="robot_description" command="$(find xacro)/xacro '$(find robot_description)/urdf/new_car.urdf.xacro'"/>
-  <node name="car_spawn" pkg="gazebo_ros" type="spawn_model" output="screen"
-   args="-urdf -param robot_description -model car" />
+        <!-- Gazebo  -->
+        <include file="$(find gazebo_ros)/launch/empty_world.launch">
+            <arg name="world_name" default="$(arg world_name)"/>
+        </include>
 
-  <!--
-  <rosparam file="$(find robot_description)/config/controller.yaml" command="load"/>
-  -->
-  <rosparam file="$(find robot_control)/config/gains.yaml" command="load"/>
-  <rosparam file="$(find robot_control)/config/steering.yaml" command="load"/>
-  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
-    output="screen" ns="/car"
-    args="ackermann_steering_controller gains"/>
+        <!-- Load the robot description -->
+        <param name="robot_description" command="$(find xacro)/xacro $(arg model)"/>
 
-  <!-- convert joint states to TF transforms for rviz, etc -->
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
-    respawn="false" output="screen">
-    <remap from="/joint_states" to="/car/joint_states" />
-  </node>
+        <!-- Load ros_controllers configuration parameters -->
+        <rosparam file="$(find robot_description)/config/ctrl_ackermann_steering_controller.yaml" command="load" ns="$(arg namespace)" />
+        <rosparam file="$(find robot_description)/config/ctrl_gains.yaml" command="load" ns="$(arg namespace)" />
+        <rosparam file="$(find robot_description)/config/ctrl_joint_state_publisher.yaml" command="load" ns="$(arg namespace)" />
+        <rosparam file="$(find robot_description)/config/ctrl_steer_bot_hardware_gazebo.yaml" command="load" ns="$(arg namespace)" />
+
+        <!-- Spawn the controllers -->
+        <node pkg="controller_manager" type="spawner" name="controller_spawner" ns="$(arg namespace)"
+            args="joint_state_publisher ackermann_steering_controller"
+            output="screen" respawn="false" />
+
+        <!-- Launch  the robot state publisher -->
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+            <param name="publish_frequency" value="50.0"/>
+        </node>
+
+        <!-- Launch a rqt steering GUI for publishing to /steer_bot/steer_drive_controller/cmd_vel -->
+        <node pkg="rqt_robot_steering" type="rqt_robot_steering" name="rqt_robot_steering" >
+            <param name="default_topic" value="$(arg namespace)/ackermann_steering_controller/cmd_vel"/>
+        </node>
+
+        <!-- Spawn robot in Gazebo -->
+        <node name="spawn_vehicle" pkg="gazebo_ros" type="spawn_model"
+            args="-urdf -param robot_description -model car
+                -gazebo_namespace /$(arg namespace)/gazebo
+                -x $(arg x) -y $(arg y) -z $(arg z)
+                -R $(arg roll) -P $(arg pitch) -Y $(arg yaw)"
+            respawn="false" output="screen" />
+
+    </group>
+
 
 
 </launch>

@@ -1,0 +1,25 @@
+repositories:
+  autonomous_car_model:
+    type: git
+    url: git@github.com:tooploox/autonomous_car_model.git
+    version: master
+  realsense_gazebo_plugin:
+    type: git
+    url: https://github.com/m-tartari/realsense_gazebo_plugin.git
+    version: melodic-devel
+  ros_controllers:
+    type: git
+    url: git@github.com:tooploox/ros_controllers.git
+    version: ackermann_steering_angle_calculation
+  slam_gmapping:
+    type: git
+    url: https://github.com/ros-perception/slam_gmapping.git
+    version: melodic-devel
+  steer_bot:
+    type: git
+    url: https://github.com/srmainwaring/steer_bot.git
+    version: master
+  steer_drive_ros:
+    type: git
+    url: https://github.com/tooploox/steer_drive_ros.git
+    version: melodic-devel

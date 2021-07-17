@@ -73,13 +73,21 @@ Your workspace will be active only in the current terminal until you close it. T
 
 Clone the repository, install dependencies and build the project
 ----------------------------------------------------------------
-The repository should be cloned to the src directory in your catkin workspace. You can run the following commands to clone the repository and install dependencies.
+The repository should be cloned to the src directory in your catkin workspace. You can run the following commands to clone the repository and install dependencies. There are external github repositories that you'll need to clone before installing all the dependencies. You can use vcstool: https://github.com/dirk-thomas/vcstool for that.
+
+.. warning::
+    **The steps below assume that you have vcstool installed.**
+
+    We store external dependencies in a vcstool file with the *.repos* extension. You can clone the repositories listed there manually or install vcstool and use that instead.
+
+    Run `sudo pip3 install vcstool` to install the latest version of vcstool.
 
 .. code-block:: bash
 
     $ cd <path to catkin workspace>/src
     $ git clone https://github.com/tooploox/autonomous_car_model.git
     $ cd ..
+    $ vcs import < autonomous_car_model/download.repos
     $ rosdep install --from-paths src --ignore-src -r -y
     $ catkin_make
 
