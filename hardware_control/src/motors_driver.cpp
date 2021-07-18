@@ -3,33 +3,26 @@
 #include "hardware_interface/actuator_state_interface.h"
 #include <ros/callback_queue.h>
 
-int main(int argc, char** argv)
+
+int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "test_node");
+  ros::init(argc, argv, "steerbot");
   ros::NodeHandle nh;
-  ros::CallbackQueue queue;
-  nh.setCallbackQueue(&queue);
 
-  CarRobot robot;
-  controller_manager::ControllerManager cm(&robot,nh);
+  Steerbot robot;
+  controller_manager::ControllerManager cm(&robot, nh);
 
-
-  ros::AsyncSpinner spinner(2, &queue);
+  ROS_WARN_STREAM("LOADED CONTROLLERS");
+  ros::Rate rate(1.0 / robot.getPeriod().toSec());
+  ros::AsyncSpinner spinner(1);
   spinner.start();
-
-  ros::Time ts = ros::Time::now();
-
-  ros::Rate rate(50);
-  while (ros::ok())
+  while(ros::ok())
   {
-     ros::Duration d = ros::Time::now() - ts;
-     ts = ros::Time::now();
-     robot.read();
-     cm.update(ts, d);
-     robot.write();
-     rate.sleep();
+    robot.read();
+    cm.update(robot.getTime(), robot.getPeriod());
+    robot.write();
+    rate.sleep();
   }
-
   spinner.stop();
 
   return 0;

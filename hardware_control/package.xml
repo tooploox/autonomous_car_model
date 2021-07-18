@@ -62,6 +62,7 @@
   <build_export_depend>robot_state_publisher</build_export_depend>
   <exec_depend>controller_manager</exec_depend>
   <exec_depend>ackermann_steering_controller</exec_depend>
+  <exec_depend>robot_description</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
   <exec_depend>joint_state_publisher</exec_depend>
   <exec_depend>roscpp</exec_depend>
