@@ -1,3 +1,5 @@
+#include "Python.h"
+#include "py_driver.h"
 #include <hardware_interface/joint_command_interface.h>
 #include <hardware_interface/joint_state_interface.h>
 #include <hardware_interface/robot_hw.h>
@@ -23,15 +25,34 @@ public:
    registerInterface(&jnt_state_interface);
    registerInterface(&jnt_pos_interface);
    registerInterface(&jnt_vel_interface);
-}
 
-  virtual ~CarRobot(){}
+   if (PyImport_AppendInittab("py_driver", PyInit_py_driver) == -1) {
+        fprintf(stderr, "Error: could not extend in-built modules table\n");
+        exit(1);
+   }
+
+   Py_Initialize();
+   PyImport_ImportModule("py_driver");
+   py_car_robot = instantiatePyCarRobot();
+
+   if (py_car_robot == nullptr){
+    exit(1);
+   }
+
+}
+  PyObject *py_car_robot = nullptr;
+
+  virtual ~CarRobot(){
+     Py_Finalize();
+  }
 
   void write()
   {
-	  std::cout<<"write "<<"  "<< vel[0]<<" "<< vel[1] << std::endl;
-	  std::cout<<"write "<<"  "<< pos[0]<<" "<< pos[1] << std::endl;
-	  std::cout<< std::endl;
+      std::cout<< set_speed(py_car_robot, vel[0]) << std::endl;
+      std::cout<< set_angle(py_car_robot, pos[0]) << std::endl;
+	  //std::cout<<"write "<<"  "<< vel[0]<<" "<< vel[1] << std::endl;
+	  //std::cout<<"write "<<"  "<< pos[0]<<" "<< pos[1] << std::endl;
+	  //std::cout<< std::endl;
   }
 
   void read()

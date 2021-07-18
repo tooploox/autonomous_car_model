@@ -17,6 +17,8 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
+find_package(PythonLibs REQUIRED)
+find_package(Python3 COMPONENTS Interpreter Development.Embed)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -75,6 +77,7 @@ find_package(catkin REQUIRED COMPONENTS
 #   std_msgs
 # )
 
+
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
 ################################################
@@ -120,6 +123,7 @@ catkin_package(
 include_directories(
 include
   ${catkin_INCLUDE_DIRS}
+  ${PYTHON_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -135,7 +139,9 @@ include
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(CarRobot src/CarRobot.cpp)
+add_executable(motors_driver
+  src/motors_driver.cpp
+  include/py_driver.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -145,11 +151,12 @@ add_executable(CarRobot src/CarRobot.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-add_dependencies(CarRobot ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(motors_driver ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(CarRobot
+target_link_libraries(motors_driver
    ${catkin_LIBRARIES}
+   ${PYTHON_LIBRARIES}
 )
 
 #############
