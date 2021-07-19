@@ -20,8 +20,8 @@
 #endif
 
 __PYX_EXTERN_C PyObject *instantiatePyCarRobot(void);
-__PYX_EXTERN_C char *set_speed(PyObject *, float);
-__PYX_EXTERN_C char *set_angle(PyObject *, float);
+__PYX_EXTERN_C bool set_throttle(PyObject *, float);
+__PYX_EXTERN_C bool set_angle(PyObject *, float);
 
 #endif /* !__PYX_HAVE_API__py_driver */
 

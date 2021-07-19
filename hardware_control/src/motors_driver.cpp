@@ -9,7 +9,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "steerbot");
   ros::NodeHandle nh;
 
-  Steerbot robot;
+  CarRobot robot;
   controller_manager::ControllerManager cm(&robot, nh);
 
   ROS_WARN_STREAM("LOADED CONTROLLERS");

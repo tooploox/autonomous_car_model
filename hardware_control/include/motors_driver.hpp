@@ -12,21 +12,18 @@
 #include <realtime_tools/realtime_buffer.h>
 
 #include <limits>
-#include <sstream>
+#include <cmath>
 
-enum INDEX_WHEEL {
-    INDEX_RIGHT = 0,
-    INDEX_LEFT = 1
-};
+#define PI 3.1415926535897
+#define SERVO_DEG_OFFSET 90
 
-class Steerbot : public hardware_interface::RobotHW
+class CarRobot : public hardware_interface::RobotHW
 {
 public:
-  Steerbot()
+  CarRobot()
   : running_(true)
-  , start_srv_(nh_.advertiseService("start", &Steerbot::startCallback, this))
-  , stop_srv_(nh_.advertiseService("stop", &Steerbot::stopCallback, this))
-  , ns_("/car/ackermann_steering_controller/")
+  , start_srv_(nh_.advertiseService("start", &CarRobot::startCallback, this))
+  , stop_srv_(nh_.advertiseService("stop", &CarRobot::stopCallback, this))
   {
 
     // Intialize raw data
@@ -34,10 +31,10 @@ public:
     this->getJointNames(nh_);
     this->registerHardwareInterfaces();
 
-    nh_.getParam(ns_ + "wheel_separation_w", wheel_separation_w_);
-    nh_.getParam(ns_ + "wheel_separation_h", wheel_separation_h_);
-    ROS_INFO_STREAM("wheel_separation_w in test steerbot= " << wheel_separation_w_);
-    ROS_INFO_STREAM("wheel_separation_h in test steerbot= " << wheel_separation_h_);
+    nh_.getParam(nh_.getNamespace() + "/robot_info/max_steering_angle", max_steering_angle_);
+    nh_.getParam(nh_.getNamespace() + "/robot_info/max_wheel_speed", max_wheel_speed_);
+    nh_.getParam(nh_.getNamespace() + "/robot_info/max_reverse_wheel_speed", max_reverse_wheel_speed_);
+
 
     if (PyImport_AppendInittab("py_driver", PyInit_py_driver) == -1) {
         fprintf(stderr, "Error: could not extend in-built modules table\n");
@@ -60,38 +57,31 @@ public:
 
   void read()
   {
-    std::ostringstream os;
-    // directly get from controller
-    os << rear_wheel_jnt_vel_cmd_ << ", ";
-    os << front_steer_jnt_pos_cmd_ << ", ";
-
-    //-- ackerman link
-    const double h = wheel_separation_h_;
-    const double w = wheel_separation_w_;
-
-    if (rear_wheel_jnt_vel_cmd_ != 0.0 || front_steer_jnt_pos_cmd_ != 0.0)
-      ROS_INFO_STREAM("Commands for joints: " << os.str());
-
+    /*
+    TODO: Add support for motor encoder and read actual speed.
+      There is no option to read steering servo position but as it's
+      a closed loop we may assume that the position is the same as requested.
+    */
   }
 
   void write()
   {
-    std::ostringstream os;
     if (running_)
     {
       // wheels
       rear_wheel_jnt_pos_ += rear_wheel_jnt_vel_*getPeriod().toSec();
-      rear_wheel_jnt_vel_ = rear_wheel_jnt_vel_cmd_;
+      rear_wheel_jnt_vel_ = impose_speed_limit(rear_wheel_jnt_vel_cmd_, max_wheel_speed_, max_reverse_wheel_speed_);
 
       // steers
-      front_steer_jnt_pos_ = front_steer_jnt_pos_cmd_;
+      front_steer_jnt_pos_ = impose_angle_limit(front_steer_jnt_pos_cmd_, max_steering_angle_);
 
-      ROS_WARN_STREAM("Vel" << rear_wheel_jnt_vel_);
-      ROS_WARN_STREAM("Pos" <<rear_wheel_jnt_pos_);
+      //Add offset at the PWM controller expects angles in 0-180 range
+      set_angle(py_car_robot, radians2degrees(front_steer_jnt_pos_) + SERVO_DEG_OFFSET);
+      set_throttle(py_car_robot, speed2throttle(rear_wheel_jnt_vel_, max_wheel_speed_, max_reverse_wheel_speed_));
 
-      // directly get from controller
-      os << rear_wheel_jnt_vel_cmd_ << ", ";
-      os << front_steer_jnt_pos_cmd_ << ", ";
+      ROS_INFO_STREAM("Wheel pos: " << rear_wheel_jnt_pos_);
+      ROS_INFO_STREAM("Throttle: " << speed2throttle(rear_wheel_jnt_vel_, max_wheel_speed_, max_reverse_wheel_speed_));
+      ROS_INFO_STREAM("Steer angle: " << radians2degrees(front_steer_jnt_pos_));
 
     }
     else
@@ -103,18 +93,7 @@ public:
       // steers
       front_steer_jnt_pos_= std::numeric_limits<double>::quiet_NaN();
       front_steer_jnt_vel_= std::numeric_limits<double>::quiet_NaN();
-
-
-      // wheels
-      os << rear_wheel_jnt_pos_ << ", ";
-      os << rear_wheel_jnt_vel_ << ", ";
-
-
-      // steers
-      os << front_steer_jnt_pos_ << ", ";
-      os << front_steer_jnt_vel_ << ", ";
     }
-    ROS_INFO_STREAM("running_ = " << running_ << ". commands are " << os.str());
   }
 
   bool startCallback(std_srvs::Empty::Request& /*req*/, std_srvs::Empty::Response& /*res*/)
@@ -165,7 +144,7 @@ private:
   void getWheelJointNames(ros::NodeHandle &_nh)
   {
     // wheel joint to get linear command
-    _nh.getParam(ns_ + "rear_wheel", rear_wheel_jnt_name_);
+    _nh.getParam(nh_.getNamespace() + "/ackermann_steering_controller/rear_wheel", rear_wheel_jnt_name_);
     ROS_WARN_STREAM("REAR wheel" << rear_wheel_jnt_name_);
 
   }
@@ -173,7 +152,7 @@ private:
   void getSteerJointNames(ros::NodeHandle &_nh)
   {
     // steer joint to get angular command
-    _nh.getParam(ns_ + "front_steer", front_steer_jnt_name_);
+    _nh.getParam(nh_.getNamespace() + "/ackermann_steering_controller/front_steer", front_steer_jnt_name_);
 
   }
 
@@ -193,7 +172,8 @@ private:
     // actual wheel joints
     this->registerInterfaceHandles(
           jnt_state_interface_, rear_wheel_jnt_vel_cmd_interface_,
-          rear_wheel_jnt_name_, rear_wheel_jnt_pos_, rear_wheel_jnt_vel_, rear_wheel_jnt_eff_, rear_wheel_jnt_vel_cmd_);
+          rear_wheel_jnt_name_, rear_wheel_jnt_pos_, rear_wheel_jnt_vel_,
+          rear_wheel_jnt_eff_, rear_wheel_jnt_vel_cmd_);
   }
 
   void registerSteerInterface()
@@ -201,7 +181,8 @@ private:
     // actual steer joints
     this->registerInterfaceHandles(
           jnt_state_interface_, front_steer_jnt_pos_cmd_interface_,
-          front_steer_jnt_name_, front_steer_jnt_pos_, front_steer_jnt_vel_, front_steer_jnt_eff_, front_steer_jnt_pos_cmd_);
+          front_steer_jnt_name_, front_steer_jnt_pos_, front_steer_jnt_vel_,
+          front_steer_jnt_eff_, front_steer_jnt_pos_cmd_);
 
   }
 
@@ -243,6 +224,61 @@ private:
     ROS_INFO_STREAM("Registered joint '" << _jnt_name << " ' in the CommandJointInterface");
   }
 
+  float radians2degrees(float radians)
+  {
+    return (radians * (180 / PI));
+  }
+
+  float degrees2radians(float degrees)
+  {
+    return (degrees * PI) / 180;
+
+  }
+
+  double impose_speed_limit(double requested_speed, double max_forward_speed, double max_reverse_speed)
+  {
+    if (requested_speed > max_forward_speed)
+    {
+     requested_speed = max_forward_speed;
+    }
+    else if (requested_speed < max_reverse_speed * -1)
+    {
+     requested_speed = max_reverse_speed * -1;
+    }
+
+    return requested_speed;
+  }
+
+  double impose_angle_limit(double requested_angle_rad, double max_angle)
+  {
+    double requested_angle_deg = radians2degrees(requested_angle_rad);
+
+    if (std::abs(requested_angle_deg) > max_angle)
+    {
+     requested_angle_deg = max_angle * (requested_angle_deg / std::abs(requested_angle_deg));
+    }
+
+    return degrees2radians(requested_angle_deg);
+  }
+
+  double speed2throttle(double speed, double max_forward_speed, double max_reverse_speed)
+  {
+    double throttle = 0;
+
+    if (speed > 0)
+    {
+      throttle = speed / max_forward_speed;
+    }
+    else
+    {
+      throttle = speed / max_reverse_speed;
+    }
+
+    return throttle;
+  }
+
+
+
 private:
   // common
   hardware_interface::JointStateInterface jnt_state_interface_;// rear wheel
@@ -274,15 +310,10 @@ private:
   //---- Hardware interface: joint
   hardware_interface::PositionJointInterface front_steer_jnt_pos_cmd_interface_;
 
+  double max_steering_angle_;
+  double max_wheel_speed_; // Wheel turns per second at full throttle
+  double max_reverse_wheel_speed_; // Wheel turns per second at full reverse throttle
 
-
-
-  // Wheel separation, wrt the midpoint of the wheel width:
-  double wheel_separation_w_;
-  // Wheel separation, wrt the midpoint of the wheel width:
-  double wheel_separation_h_;
-
-  std::string ns_;
   bool running_;
 
   ros::NodeHandle nh_;
