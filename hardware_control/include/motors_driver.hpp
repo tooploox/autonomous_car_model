@@ -31,9 +31,14 @@ public:
     this->getJointNames(nh_);
     this->registerHardwareInterfaces();
 
+    nh_.getParam(nh_.getNamespace() + "/ackermann_steering_controller/wheel_radius", wheel_radius_);
+    nh_.getParam(nh_.getNamespace() + "/ackermann_steering_controller/linear/x/max_velocity", max_linear_velocity_);
+    max_wheel_speed_ = max_linear_velocity_;
+
     nh_.getParam(nh_.getNamespace() + "/robot_info/max_steering_angle", max_steering_angle_);
     nh_.getParam(nh_.getNamespace() + "/robot_info/max_wheel_speed", max_wheel_speed_);
     nh_.getParam(nh_.getNamespace() + "/robot_info/max_reverse_wheel_speed", max_reverse_wheel_speed_);
+
 
 
     if (PyImport_AppendInittab("py_driver", PyInit_py_driver) == -1) {
@@ -80,6 +85,8 @@ public:
       set_throttle(py_car_robot, speed2throttle(rear_wheel_jnt_vel_, max_wheel_speed_, max_reverse_wheel_speed_));
 
       ROS_INFO_STREAM("Wheel pos: " << rear_wheel_jnt_pos_);
+      ROS_INFO_STREAM("vel: " << rear_wheel_jnt_vel_);
+      ROS_INFO_STREAM("pos: " << front_steer_jnt_pos_);
       ROS_INFO_STREAM("Throttle: " << speed2throttle(rear_wheel_jnt_vel_, max_wheel_speed_, max_reverse_wheel_speed_));
       ROS_INFO_STREAM("Steer angle: " << radians2degrees(front_steer_jnt_pos_));
 
@@ -313,6 +320,8 @@ private:
   double max_steering_angle_;
   double max_wheel_speed_; // Wheel turns per second at full throttle
   double max_reverse_wheel_speed_; // Wheel turns per second at full reverse throttle
+  double wheel_radius_;
+  double max_linear_velocity_;
 
   bool running_;
 

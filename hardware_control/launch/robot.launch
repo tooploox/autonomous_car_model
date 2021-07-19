@@ -13,7 +13,8 @@
 
   <node name="steer_drive_controller_steerbot"
         pkg="hardware_control"
-        type="motors_driver"/>
+        type="motors_driver"
+        output="screen"/>
 
   <node pkg="controller_manager" type="spawner" name="controller_spawner"
             args="joint_state_publisher ackermann_steering_controller"
