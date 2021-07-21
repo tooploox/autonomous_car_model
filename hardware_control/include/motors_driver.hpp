@@ -10,12 +10,16 @@
 #include <hardware_interface/joint_state_interface.h>
 #include <hardware_interface/robot_hw.h>
 #include <realtime_tools/realtime_buffer.h>
+#include <urdf_parser/urdf_parser.h>
+#include <joint_limits_interface/joint_limits.h>
+#include <joint_limits_interface/joint_limits_urdf.h>
 
 #include <limits>
 #include <cmath>
 
 #define PI 3.1415926535897
 #define SERVO_DEG_OFFSET 90
+
 
 class CarRobot : public hardware_interface::RobotHW
 {
@@ -30,16 +34,10 @@ public:
     this->cleanUp();
     this->getJointNames(nh_);
     this->registerHardwareInterfaces();
+    max_steering_angle_ = getSteeringLimitFromURDF(nh_, "front_steer_joint");
+    max_wheel_speed_ = getMaxWheelSpeed(nh_);
 
-    nh_.getParam(nh_.getNamespace() + "/ackermann_steering_controller/wheel_radius", wheel_radius_);
-    nh_.getParam(nh_.getNamespace() + "/ackermann_steering_controller/linear/x/max_velocity", max_linear_velocity_);
-    max_wheel_speed_ = max_linear_velocity_;
-
-    nh_.getParam(nh_.getNamespace() + "/robot_info/max_steering_angle", max_steering_angle_);
-    nh_.getParam(nh_.getNamespace() + "/robot_info/max_wheel_speed", max_wheel_speed_);
-    nh_.getParam(nh_.getNamespace() + "/robot_info/max_reverse_wheel_speed", max_reverse_wheel_speed_);
-
-
+    ROS_WARN_STREAM("MAX SPEED " << max_wheel_speed_);
 
     if (PyImport_AppendInittab("py_driver", PyInit_py_driver) == -1) {
         fprintf(stderr, "Error: could not extend in-built modules table\n");
@@ -75,19 +73,19 @@ public:
     {
       // wheels
       rear_wheel_jnt_pos_ += rear_wheel_jnt_vel_*getPeriod().toSec();
-      rear_wheel_jnt_vel_ = impose_speed_limit(rear_wheel_jnt_vel_cmd_, max_wheel_speed_, max_reverse_wheel_speed_);
+      rear_wheel_jnt_vel_ = rear_wheel_jnt_vel_cmd_;
 
       // steers
       front_steer_jnt_pos_ = impose_angle_limit(front_steer_jnt_pos_cmd_, max_steering_angle_);
 
       //Add offset at the PWM controller expects angles in 0-180 range
       set_angle(py_car_robot, radians2degrees(front_steer_jnt_pos_) + SERVO_DEG_OFFSET);
-      set_throttle(py_car_robot, speed2throttle(rear_wheel_jnt_vel_, max_wheel_speed_, max_reverse_wheel_speed_));
+      set_throttle(py_car_robot, speed2throttle(rear_wheel_jnt_vel_, max_wheel_speed_));
 
       ROS_INFO_STREAM("Wheel pos: " << rear_wheel_jnt_pos_);
       ROS_INFO_STREAM("vel: " << rear_wheel_jnt_vel_);
       ROS_INFO_STREAM("pos: " << front_steer_jnt_pos_);
-      ROS_INFO_STREAM("Throttle: " << speed2throttle(rear_wheel_jnt_vel_, max_wheel_speed_, max_reverse_wheel_speed_));
+      ROS_INFO_STREAM("Throttle: " << speed2throttle(rear_wheel_jnt_vel_, max_wheel_speed_));
       ROS_INFO_STREAM("Steer angle: " << radians2degrees(front_steer_jnt_pos_));
 
     }
@@ -163,6 +161,38 @@ private:
 
   }
 
+  double getSteeringLimitFromURDF(ros::NodeHandle& root_nh, const std::string front_steer_name)
+  {
+    // Parse robot description
+    const std::string model_param_name = "robot_description";
+    bool res = root_nh.hasParam(model_param_name);
+    std::string robot_model_str="";
+    if (!res || !root_nh.getParam(model_param_name, robot_model_str))
+    {
+      ROS_WARN_STREAM("Robot descripion couldn't be retrieved from param server.");
+    }
+
+     joint_limits_interface::JointLimits limits;
+     urdf::ModelInterfaceSharedPtr model(urdf::parseURDF(robot_model_str));
+     urdf::JointConstSharedPtr front_steer_joint(model->getJoint(front_steer_name));
+
+     const bool urdf_limits_ok = joint_limits_interface::getJointLimits(front_steer_joint, limits);
+     ROS_INFO_STREAM("Found " << limits.max_position);
+
+     return limits.max_position;
+  }
+
+  double getMaxWheelSpeed(ros::NodeHandle& root_nh)
+  {
+    double wheel_radius, wheel_radius_mult, max_linear_velocity;
+
+    nh_.getParam(nh_.getNamespace() + "/ackermann_steering_controller/wheel_radius", wheel_radius);
+    nh_.getParam(nh_.getNamespace() + "/ackermann_steering_controller/wheel_radius_multiplier", wheel_radius_mult);
+    nh_.getParam(nh_.getNamespace() + "/ackermann_steering_controller/linear/x/max_velocity", max_linear_velocity);
+
+    return max_linear_velocity / (wheel_radius * wheel_radius_mult);
+  }
+
   void registerHardwareInterfaces()
   {
     this->registerSteerInterface();
@@ -231,55 +261,26 @@ private:
     ROS_INFO_STREAM("Registered joint '" << _jnt_name << " ' in the CommandJointInterface");
   }
 
-  float radians2degrees(float radians)
-  {
-    return (radians * (180 / PI));
-  }
+  double radians2degrees(double radians) { return (radians * (180 / PI)); }
+  float degrees2radians(float degrees) { return (degrees * PI) / 180; }
 
-  float degrees2radians(float degrees)
-  {
-    return (degrees * PI) / 180;
 
-  }
-
-  double impose_speed_limit(double requested_speed, double max_forward_speed, double max_reverse_speed)
+  double impose_angle_limit(double requested_angle_rad, double max_angle_rad)
   {
-    if (requested_speed > max_forward_speed)
+    double limited_angle = requested_angle_rad;
+
+    if (std::abs(requested_angle_rad) > max_angle_rad)
     {
-     requested_speed = max_forward_speed;
-    }
-    else if (requested_speed < max_reverse_speed * -1)
-    {
-     requested_speed = max_reverse_speed * -1;
+     limited_angle = max_angle_rad * (requested_angle_rad / std::abs(requested_angle_rad));
     }
 
-    return requested_speed;
+    return limited_angle;
   }
 
-  double impose_angle_limit(double requested_angle_rad, double max_angle)
-  {
-    double requested_angle_deg = radians2degrees(requested_angle_rad);
-
-    if (std::abs(requested_angle_deg) > max_angle)
-    {
-     requested_angle_deg = max_angle * (requested_angle_deg / std::abs(requested_angle_deg));
-    }
-
-    return degrees2radians(requested_angle_deg);
-  }
-
-  double speed2throttle(double speed, double max_forward_speed, double max_reverse_speed)
+  double speed2throttle(double speed, double max_wheel_speed)
   {
     double throttle = 0;
-
-    if (speed > 0)
-    {
-      throttle = speed / max_forward_speed;
-    }
-    else
-    {
-      throttle = speed / max_reverse_speed;
-    }
+    throttle = speed / max_wheel_speed;
 
     return throttle;
   }
@@ -317,10 +318,9 @@ private:
   //---- Hardware interface: joint
   hardware_interface::PositionJointInterface front_steer_jnt_pos_cmd_interface_;
 
+
   double max_steering_angle_;
-  double max_wheel_speed_; // Wheel turns per second at full throttle
-  double max_reverse_wheel_speed_; // Wheel turns per second at full reverse throttle
-  double wheel_radius_;
+  double max_wheel_speed_;
   double max_linear_velocity_;
 
   bool running_;

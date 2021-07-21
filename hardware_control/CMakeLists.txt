@@ -19,7 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
 # find_package(Boost REQUIRED COMPONENTS system)
 find_package(PythonLibs REQUIRED)
 find_package(Python3 COMPONENTS Interpreter Development.Embed)
-
+find_package(urdfdom REQUIRED)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -108,10 +108,10 @@ find_package(Python3 COMPONENTS Interpreter Development.Embed)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES hardware_control
-#  CATKIN_DEPENDS roscpp rospy std_msgs
-#  DEPENDS system_lib
+  INCLUDE_DIRS include
+  LIBRARIES hardware_control
+  CATKIN_DEPENDS roscpp rospy std_msgs
+  DEPENDS system_lib TinyXML
 )
 
 ###########
@@ -121,9 +121,10 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-include
+  include
   ${catkin_INCLUDE_DIRS}
   ${PYTHON_INCLUDE_DIRS}
+  ${urdfdom_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -157,6 +158,7 @@ add_dependencies(motors_driver ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPO
 target_link_libraries(motors_driver
    ${catkin_LIBRARIES}
    ${PYTHON_LIBRARIES}
+   ${urdfdom_LIBRARIES}
 )
 
 #############

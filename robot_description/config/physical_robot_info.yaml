@@ -1,4 +1,0 @@
-robot_info:
-  max_steering_angle: 60 # Maximum steering angle in degrees, we assume it's symmetrical
-  max_wheel_speed: 100 # Wheel turns per second at full throttle
-  max_reverse_wheel_speed: 100 # Wheel turns per second at full reverse throttle
