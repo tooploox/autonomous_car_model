@@ -111,7 +111,7 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES hardware_control
   CATKIN_DEPENDS roscpp rospy std_msgs
-  DEPENDS system_lib TinyXML
+  DEPENDS system_lib
 )
 
 ###########

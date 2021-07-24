@@ -74,6 +74,10 @@
   <depend>image_transport</depend>
   <depend>camera_info_manager</depend>
   <depend>realsense_gazebo_plugin</depend>
+  <depend>octomap-rviz-plugins</depend>
+  <depend>realsense2-camera</depend>
+  <depend>rtabmap-ros</depend>
+
   
   <!-- The export tag contains other, unspecified, tags -->
   <export>
