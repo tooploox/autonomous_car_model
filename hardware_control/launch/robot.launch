@@ -1,0 +1,32 @@
+<launch>
+
+  <arg name="namespace" default="/car" />
+  <group ns="$(arg namespace)">
+
+  <param name="robot_description"
+         command="$(find xacro)/xacro '$(find robot_description)/urdf/car.urdf.xacro'" />
+
+  <rosparam file="$(find robot_description)/config/ctrl_ackermann_steering_controller.yaml" command="load"/>
+  <rosparam file="$(find robot_description)/config/ctrl_gains.yaml" command="load" />
+  <rosparam file="$(find robot_description)/config/ctrl_joint_state_publisher.yaml" command="load" />
+
+  <node name="steer_drive_controller_steerbot"
+        pkg="hardware_control"
+        type="motors_driver"
+        output="screen"/>
+
+  <node pkg="controller_manager" type="spawner" name="controller_spawner"
+            args="joint_state_publisher ackermann_steering_controller"
+            output="screen" respawn="false" />
+      
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+            <param name="publish_frequency" value="50.0"/>
+        </node>
+
+  <node pkg="rqt_robot_steering" type="rqt_robot_steering" name="rqt_robot_steering" >
+            <param name="default_topic" value="$(arg namespace)/ackermann_steering_controller/cmd_vel"/>
+        </node>
+
+  </group>
+
+</launch>

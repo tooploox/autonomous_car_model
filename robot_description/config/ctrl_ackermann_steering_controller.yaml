@@ -4,7 +4,7 @@ ackermann_steering_controller:
 
     # Odometry related 
     publish_rate: 1
-    open_loop: true
+    open_loop: false
 
     # Joints
     rear_wheel: 'rear_wheel_joint'
@@ -41,7 +41,7 @@ ackermann_steering_controller:
     linear:
         x:
             has_velocity_limits    : true
-            max_velocity           : 2.0   # m/s
+            max_velocity           : 5.0   # m/s
             has_acceleration_limits: true
             max_acceleration       : 1.0    # m/s^2
     angular:

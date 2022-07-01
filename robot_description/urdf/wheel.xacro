@@ -65,7 +65,7 @@
       <origin xyz="${axle_offset} 0 ${steer_height}" rpy="0 0 0"/>
       <axis xyz="0 0 1"/>
       <limit effort="${steer_effort}"
-             lower="${-180.0 * deg_to_rad}" upper="${180.0 * deg_to_rad}"
+             lower="${-steer_limit_deg * deg_to_rad}" upper="${steer_limit_deg * deg_to_rad}"
              velocity="${steer_velocity}"/>
     </joint>
 
